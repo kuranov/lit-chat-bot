@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/ChatBotApp.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ChatBotApp",
+          "members": [
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "default": "'My app'",
+              "attribute": "title"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "default": "'My app'",
+              "fieldName": "title"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "chat-bot-app",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ChatBotApp",
+          "declaration": {
+            "name": "ChatBotApp",
+            "module": "src/ChatBotApp.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/chat-bot-app.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "chat-bot-app",
+          "declaration": {
+            "name": "ChatBotApp",
+            "module": "/src/ChatBotApp.js"
+          }
+        }
+      ]
+    }
+  ]
+}
