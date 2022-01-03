@@ -50,6 +50,7 @@ export class ChatRoomMessageForm extends LitElement {
   private onFormSubmit(event: Event): void {
     event.preventDefault();
     const text = this.textInput.value.trim();
+    this.textInput.value = '';
     this.dispatchEvent(new CustomEvent('message', {
       detail: { text },
     }));

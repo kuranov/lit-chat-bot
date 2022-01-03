@@ -1,7 +1,7 @@
 import {ElementPart, html, noChange, Part} from "lit";
 import {Directive} from 'lit/directive.js';
 
-export class ScrollToBottomAfterUpdateDirective  extends Directive {
+export class ScrollToBottomAfterUpdateDirective extends Directive {
   render() {
     return noChange;
   }

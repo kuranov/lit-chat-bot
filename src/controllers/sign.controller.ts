@@ -17,10 +17,12 @@ export class SignController implements ReactiveController {
   hostDisconnected() {}
 
   in(username: string): void {
-    fetchPost('signin', {username}).then(() => {
+    fetchPost('signin', {username}).then((res) => {
+      console.log('res', res);
       this.memberSetter({
         name: username,
         isBot: false,
+        avatar: username,
       });
       this.host.requestUpdate();
     });

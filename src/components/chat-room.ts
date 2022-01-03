@@ -16,7 +16,7 @@ export class ChatRoom extends LitElement {
       align-items: stretch;
       overflow: hidden;
       height: 80%;
-      border-top: 16px solid #cecece;
+      border-top: 8px solid #ccc;
       border-radius: 8px;
       padding: 0;
       background: url('/assets/ep_naturalwhite.png');
@@ -42,6 +42,7 @@ export class ChatRoom extends LitElement {
     const scrollToBottomAfterUpdate = directive(ScrollToBottomAfterUpdateDirective);
 
     return html`<nav>
+        
         <chat-room-members .members=${this.dataSource.members}></chat-room-members>
       </nav>
       <main>
