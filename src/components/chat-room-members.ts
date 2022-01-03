@@ -10,6 +10,10 @@ export class ChatRoomMembers extends LitElement {
     li {
       list-style: none;
     }
+    i {
+      display: inline-block;
+      font-style: normal;
+    }
   `;
 
   @property()
@@ -19,7 +23,7 @@ export class ChatRoomMembers extends LitElement {
     return html`<ul>
       ${this.members?.map(member => 
         html`<li>
-          <i class="${member.isBot ? 'bot' : 'human'}"></i>
+          <i>${member.isBot ? '🤖' : '🧑‍💻'}</i>
           ${member.name}
         </li>`
       )}
