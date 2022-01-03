@@ -1,5 +1,5 @@
 import {css, html, LitElement} from 'lit';
-import {customElement, property} from "lit/decorators.js";
+import {customElement, property, state} from "lit/decorators.js";
 
 import "./chat-room-messages.js";
 import "./chat-room-members.js";
@@ -8,9 +8,6 @@ import {ChatRoomController} from "../controllers/chat-room.controller";
 
 @customElement('chat-room')
 export class ChatRoom extends LitElement {
-
-  private serverApi = new ChatRoomController(this);
-
   static override styles = css`
     :host {
       display: flex;
@@ -20,7 +17,7 @@ export class ChatRoom extends LitElement {
       border-top: 16px solid #cecece;
       border-radius: 8px;
       padding: 0;
-      background: url('/assets/chat-bg-1.png');
+      background: url('/assets/ep_naturalwhite.png');
     }
     nav {
       width: 175px;
@@ -37,12 +34,14 @@ export class ChatRoom extends LitElement {
   @property()
   username?: String;
 
+  private dataSource = new ChatRoomController(this);
+
   override render() {
     return html`<nav>
-        <chat-room-members .membersList=${this.username}></chat-room-members>
+        <chat-room-members .members=${this.dataSource.members}></chat-room-members>
       </nav>
       <main>
-        <chat-room-messages></chat-room-messages>
+        <chat-room-messages .messages=${this.dataSource.messages}></chat-room-messages>
         <chat-room-message-form></chat-room-message-form>
       </main>`;
   }

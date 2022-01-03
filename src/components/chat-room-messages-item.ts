@@ -1,10 +1,8 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from "lit/decorators.js";
 
-import "./chat-room-messages-item.js";
-
-@customElement('chat-room-messages')
-export class ChatRoomMessages extends LitElement {
+@customElement('chat-room-messages-item')
+export class ChatRoomMessagesItem extends LitElement {
   static override styles = css`
     :host {
       width: 600px;
@@ -13,15 +11,18 @@ export class ChatRoomMessages extends LitElement {
     }`;
 
   @property()
-  messages: MessageModel[] = [];
+  message?: MessageModel;
 
   override render() {
-    return html`<ul></ul>`;
+    return html`<main>
+      <header>${this.message?.username}</header>
+      <section>${this.message?.text}</section>
+    </main>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'chat-room-messages': ChatRoomMessages,
+    'chat-room-messages-item': ChatRoomMessagesItem,
   }
 }

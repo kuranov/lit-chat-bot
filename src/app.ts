@@ -16,7 +16,7 @@ export class AppElement extends LitElement {
 
   override render() {
     const content = this.name
-      ? html`<chat-room username=${this.name}></chat-room>`
+      ? html`<chat-room .username=${this.name}></chat-room>`
       : html`<login-form @login=${this.onLogin}></login-form>`;
 
     return html`<app-container>${content}</app-container>`;

@@ -13,16 +13,16 @@ export class ChatRoomMembers extends LitElement {
   `;
 
   @property()
-  membersList: any[] = [
-    'bot'
-  ];
+  members: MemberModel[] = [];
 
   override render() {
-    if (!Array.isArray(this.membersList)) {
-      this.membersList = [this.membersList];
-    }
     return html`<ul>
-      ${this.membersList?.map(member => html`<li>${member}</li>`)}
+      ${this.members?.map(member => 
+        html`<li>
+          <i class="${member.isBot ? 'bot' : 'human'}"></i>
+          ${member.name}
+        </li>`
+      )}
     </ul>`;
   }
 }

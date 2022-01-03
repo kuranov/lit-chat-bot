@@ -1,10 +1,9 @@
 import {ReactiveController, ReactiveControllerHost} from 'lit';
-import {serverConfig} from "../server/server-config";
+
+const url = (path: string) => `/api/${path}`
 
 export class ChatRoomController implements ReactiveController {
   host: ReactiveControllerHost;
-
-  // serverUrl = `localhost:${serverConfig.port}`;
   members: MemberModel[] = [];
   messages: MessageModel[] = [];
 
@@ -13,21 +12,34 @@ export class ChatRoomController implements ReactiveController {
   }
 
   hostConnected() {
-    this.fetchMembers();
+    this.loadData();
   }
 
   hostDisconnected() {
   }
 
-  private url(path: string): string {
-    return `/api/${path}`;
+  private loadData(): void {
+    this.fetchMembers().then(members => {
+      this.members = members;
+      this.host.requestUpdate();
+    });
+
+    this.fetchMessages().then(messages => {
+      this.messages = messages;
+      this.host.requestUpdate();
+    });
   }
 
-  private fetchMembers(): void {
-    fetch(this.url(`members`))
-      .then(members => {
-        console.log('members response', members);
-        // this.members = members;
-      });
+  private async fetchMembers(): Promise<MemberModel[]> {
+    return this.fetchJson<MemberModel[]>('members');
+  }
+
+  private fetchMessages(): Promise<MessageModel[]> {
+    return this.fetchJson<MessageModel[]>('messages');
+  }
+
+  private async fetchJson<T>(path: string): Promise<T> {
+    const res = await fetch(url(path));
+    return res.json();
   }
 }
