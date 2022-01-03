@@ -4,7 +4,7 @@ import {serverConfig} from "../server/server-config";
 export class ChatRoomController implements ReactiveController {
   host: ReactiveControllerHost;
 
-  serverUrl = `localhost:${serverConfig.port}`;
+  // serverUrl = `localhost:${serverConfig.port}`;
   members: MemberModel[] = [];
   messages: MessageModel[] = [];
 
@@ -20,7 +20,7 @@ export class ChatRoomController implements ReactiveController {
   }
 
   private url(path: string): string {
-    return `http://${this.serverUrl}/${path}`;
+    return `/api/${path}`;
   }
 
   private fetchMembers(): void {

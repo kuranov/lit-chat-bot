@@ -1,6 +1,8 @@
 import express from "express";
-import {serverConfig} from "./server-config";
-
+// import {serverConfig} from "./server-config";
+const serverConfig = {
+  port: 3000,
+};
 const app = express();
 const members: MemberModel[] = [];
 const messages: MessageModel[] = [];

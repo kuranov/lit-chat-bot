@@ -11,7 +11,9 @@
     "start:server": "node ./dist/src/server/main.js"
   },
   "dependencies": {
+    "@types/koa-proxy": "^1.0.4",
     "express": "^4.17.2",
+    "koa-proxy": "^1.0.0-alpha.3",
     "lit": "^2.0.2"
   },
   "devDependencies": {
