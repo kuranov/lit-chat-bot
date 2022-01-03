@@ -11,6 +11,7 @@
     "start:server": "node ./dist/src/server/main.js"
   },
   "dependencies": {
+    "@lit-labs/motion": "^1.0.1",
     "@types/koa-proxy": "^1.0.4",
     "express": "^4.17.2",
     "koa-proxy": "^1.0.0-alpha.3",
