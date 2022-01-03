@@ -15,8 +15,7 @@ export class ChatRoomController implements ReactiveController {
     this.loadData();
   }
 
-  hostDisconnected() {
-  }
+  hostDisconnected() {}
 
   private loadData(): void {
     this.fetchMembers().then(members => {

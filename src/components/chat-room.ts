@@ -32,7 +32,7 @@ export class ChatRoom extends LitElement {
   `;
 
   @property()
-  username?: String;
+  currentMember?: MemberModel;
 
   private dataSource = new ChatRoomController(this);
 
