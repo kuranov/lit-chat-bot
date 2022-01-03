@@ -1,13 +1,13 @@
 import {ReactiveController, ReactiveControllerHost} from 'lit';
-
-const url = (path: string) => `/api/${path}`
+import {apiUrl} from "../helpers/api-url";
+import {fetchPost} from "../helpers/fetch-post";
 
 export class ChatRoomController implements ReactiveController {
   host: ReactiveControllerHost;
   members: MemberModel[] = [];
   messages: MessageModel[] = [];
 
-  constructor(host: ReactiveControllerHost, timeout = 1000) {
+  constructor(host: ReactiveControllerHost, currentMember: MemberModel) {
     (this.host = host).addController(this);
   }
 
@@ -17,13 +17,30 @@ export class ChatRoomController implements ReactiveController {
 
   hostDisconnected() {}
 
+  publishMessage(member: MemberModel, text: string): void {
+    fetchPost('messages', {
+      text,
+      username: member.name,
+      time: new Date()
+    }).then(() => {
+      this.loadMessages();
+    });
+  }
+
   private loadData(): void {
     this.fetchMembers().then(members => {
       this.members = members;
       this.host.requestUpdate();
     });
 
+    this.loadMessages();
+  }
+
+  private loadMessages(): void {
     this.fetchMessages().then(messages => {
+      messages.forEach(m => {
+        m.time = new Date(Date.parse(m.time as unknown as string));
+      });
       this.messages = messages;
       this.host.requestUpdate();
     });
@@ -38,7 +55,7 @@ export class ChatRoomController implements ReactiveController {
   }
 
   private async fetchJson<T>(path: string): Promise<T> {
-    const res = await fetch(url(path));
+    const res = await fetch(apiUrl(path));
     return res.json();
   }
 }

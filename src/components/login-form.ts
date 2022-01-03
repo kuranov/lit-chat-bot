@@ -31,9 +31,7 @@ export class LoginFormElement extends LitElement {
   override render() {
     return html`<form @submit=${this.onFormSubmit}>
         <input id="name" type="text" placeholder="username" autocomplete="off" />
-        <button>
-          <img src="${loginIcon}" alt="Enter">
-        </button>
+        <button><img src="${loginIcon}" alt="Enter"></button>
     </form>`;
   }
 

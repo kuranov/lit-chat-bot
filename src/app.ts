@@ -9,7 +9,7 @@ import {TemplateResult} from "lit-html";
 
 @customElement('app-index')
 export class AppElement extends LitElement {
-  controller = new AnimateController(this, {
+  animationController = new AnimateController(this, {
     defaultOptions: {
       keyframeOptions: {
         fill: 'backwards',

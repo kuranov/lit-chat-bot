@@ -1,5 +1,5 @@
 import {css, html, LitElement} from 'lit';
-import {customElement} from "lit/decorators.js";
+import {customElement, query} from "lit/decorators.js";
 import {buttonCss} from "../css/button.css";
 import {inputTextCss} from "../css/input-text.css";
 const sendIcon = new URL('../../../assets/icon-send.svg', import.meta.url).href;
@@ -35,17 +35,24 @@ export class ChatRoomMessageForm extends LitElement {
     `
   ];
 
+  @query('#text')
+  textInput!: HTMLInputElement;
+
   override render() {
     return html`<form @submit=${this.onFormSubmit}>
-        <input id="name" type="text" placeholder="Message…" autocomplete="off" />
+        <input id="text" type="text" placeholder="Message…" autocomplete="off" />
         <button>
           <img src="${sendIcon}" alt="Enter">
         </button>
     </form>`;
   }
 
-  onFormSubmit() {
-
+  private onFormSubmit(event: Event): void {
+    event.preventDefault();
+    const text = this.textInput.value.trim();
+    this.dispatchEvent(new CustomEvent('message', {
+      detail: { text },
+    }));
   }
 }
 

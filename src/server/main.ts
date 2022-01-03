@@ -1,14 +1,21 @@
-import express from "express";
+import express, {Response} from "express";
 // import {serverConfig} from "./server-config";
 const serverConfig = {
   port: 3000,
 };
 const app = express();
+const successResponse = (res: Response) => res.send({result: 'success'})
 const members: MemberModel[] = [];
 const messages: MessageModel[] = [];
 
 // Bot join the chat!
 members.push({name: 'James Bot', isBot: true});
+
+const botHooks = {
+  onMemberLogin: function (member: MemberModel) {
+
+  },
+};
 
 app.use(express.json());
 
@@ -21,7 +28,9 @@ app.get('/messages', (req, res) => {
 });
 
 app.post('/messages', (req, res) => {
-  res.send(members);
+  const message: MessageModel = req.body;
+  messages.push(message);
+  successResponse(res);
 });
 
 app.post('/signin', function (req, res) {
@@ -32,10 +41,7 @@ app.post('/signin', function (req, res) {
     member = { name, isBot: false };
     members.push(member);
   }
-  res.send({
-    result: 'success',
-    member,
-  });
+  successResponse(res);
 });
 
 app.listen(serverConfig.port, () => {

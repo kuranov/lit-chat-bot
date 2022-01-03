@@ -1,10 +1,12 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property, state} from "lit/decorators.js";
+import {ChatRoomController} from "../controllers/chat-room.controller";
+import {ScrollToBottomAfterUpdateDirective} from "../directives/scroll-to-bottom-after-update.directive";
+import {directive} from 'lit/directive.js';
 
 import "./chat-room-messages.js";
 import "./chat-room-members.js";
 import "./chat-room-message-form.js";
-import {ChatRoomController} from "../controllers/chat-room.controller";
 
 @customElement('chat-room')
 export class ChatRoom extends LitElement {
@@ -32,19 +34,30 @@ export class ChatRoom extends LitElement {
   `;
 
   @property()
-  currentMember?: MemberModel;
+  currentMember!: MemberModel;
 
-  private dataSource = new ChatRoomController(this);
+  private dataSource = new ChatRoomController(this, this.currentMember);
 
   override render() {
+    const scrollToBottomAfterUpdate = directive(ScrollToBottomAfterUpdateDirective);
+
     return html`<nav>
         <chat-room-members .members=${this.dataSource.members}></chat-room-members>
       </nav>
       <main>
-        <chat-room-messages .messages=${this.dataSource.messages}></chat-room-messages>
-        <chat-room-message-form></chat-room-message-form>
+        <chat-room-messages
+            ${scrollToBottomAfterUpdate()}
+            .messages=${this.dataSource.messages}
+        ></chat-room-messages>
+        <chat-room-message-form @message=${this.onMessageTyped}></chat-room-message-form>
       </main>`;
   }
+
+  private onMessageTyped(event: CustomEvent): void {
+    const text = event.detail.text;
+    this.dataSource.publishMessage(this.currentMember, text);
+  }
+
 }
 
 declare global {
