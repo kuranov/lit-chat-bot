@@ -1,4 +1,4 @@
-import {generateAvatar} from "../helpers/avatar-generator";
+import {avatarGenerator} from "../helpers/avatar-generator.js";
 
 export type PublishMessageMethod = (message: MessageModel) => void;
 
@@ -7,7 +7,7 @@ export class Bot {
   profile: MemberModel = {
     name: 'James Bot',
     isBot: true,
-    avatar: generateAvatar([], true)
+    avatar: avatarGenerator([], true)
   }
 
   private publishMessage?: PublishMessageMethod;

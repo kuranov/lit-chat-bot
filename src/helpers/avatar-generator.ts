@@ -1,15 +1,16 @@
-export function generateAvatar(existing: string[] = [], forBot = false): string {
+export function avatarGenerator(existing: string[] = [], forBot = false): string {
   if (forBot) {
     return '🤖';
   }
-  const rangeStart = 0x1F400;
-  const rangeEnd = 0x1F43C;
+  const rangeStart = 0x1f400;
+  const rangeEnd = 0x1f43c;
 
   let unique = false;
   let avatar = '';
   while (!unique) {
-    const randomCharCode = Math.random() * Math.abs(rangeStart - rangeEnd);
-    avatar = String.fromCharCode(randomCharCode);
+    const randomCharCode =
+      rangeStart + Math.floor(Math.random() * Math.abs(rangeEnd - rangeStart));
+    avatar = String.fromCodePoint(randomCharCode);
     unique = !existing.includes(avatar);
   }
   return avatar;

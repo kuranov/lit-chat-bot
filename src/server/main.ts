@@ -1,82 +1,6 @@
 import express, {Response} from "express";
-export type PublishMessageMethod = (message: MessageModel) => void;
-
-export function generateAvatar(existing: string[] = [], forBot = false): string {
-  if (forBot) {
-    return '🤖';
-  }
-  const rangeStart = 0x1F400;
-  const rangeEnd = 0x1F43C;
-
-  let unique = false;
-  let avatar = '';
-  while (!unique) {
-    const randomCharCode = Math.random() * Math.abs(rangeStart - rangeEnd);
-    avatar = String.fromCharCode(randomCharCode);
-    unique = !existing.includes(avatar);
-  }
-  return avatar;
-}
-
-export class Bot {
-
-  profile: MemberModel = {
-    name: 'James Bot',
-    isBot: true,
-    avatar: generateAvatar([], true)
-  }
-
-  private publishMessage?: PublishMessageMethod;
-
-  constructor(publishMessage?: PublishMessageMethod) {
-    this.publishMessage = publishMessage;
-  }
-
-  registerPublisher(publishMessage: PublishMessageMethod): void {
-    this.publishMessage = publishMessage;
-  }
-
-  createMessage(text: string): MessageModel {
-    return {
-      text: text,
-      username: this.profile.name,
-      time: new Date(),
-    }
-  }
-
-  onMemberRegister(member: MemberModel): void {
-
-  }
-
-  onMemberOnline(member: MemberModel): void {
-
-  }
-
-  onMessage(message: MessageModel): void {
-    if (message.text.match(/hi/)) {
-      this.greeting(message);
-      return;
-    }
-  }
-
-  greeting(message: MessageModel): void {
-    const response = this.createRandom([
-      'Hello there!',
-      'Whats up, man?'
-    ]);
-    if (this.publishMessage) {
-      this.publishMessage(response);
-    }
-  }
-
-  private createRandom(items: string[]): MessageModel {
-    return this.createMessage(this.rand(items));
-  }
-  private rand(items: string[]): string {
-    return items[Math.floor(Math.random() * items.length)]
-  }
-}
-
+import {avatarGenerator} from "../helpers/avatar-generator.js";
+import {Bot} from "./bot.js";
 const serverConfig = {
   port: 3000,
 };
@@ -104,7 +28,7 @@ function onMemberOnline(username: string): MemberModel {
 function registerMember(username: string): MemberModel {
   const member: MemberModel = {
     name: username,
-    avatar: generateAvatar(members.map(m => m.avatar)),
+    avatar: avatarGenerator(members.map(m => m.avatar)),
     isBot: false,
   };
   members.push(member);
