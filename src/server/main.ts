@@ -12,12 +12,7 @@ const socketConnections: WebSocket[] = [];
 const successResponse = (res: Response) => res.send({result: 'success'})
 const members: MemberModel[] = [];
 const messages: MessageModel[] = [];
-const qa: QuestionAndAnswerModel[] = [];
 const bot: Bot = new Bot(publishMessage);
-
-// function searchForAnswer(message: MessageModel): QuestionAndAnswerModel {
-//
-// }
 
 function publishMessage(message: MessageModel) {
   messages.push(message);
@@ -72,5 +67,5 @@ app.post('/signin', function (req, res) {
   successResponse(res);
 });
 app.listen(serverConfig.port, () => {
-  console.log(`Example app listening at http://${serverConfig.host}:${serverConfig.port}`)
+  console.log(`Listening at http://${serverConfig.host}:${serverConfig.port}`)
 });

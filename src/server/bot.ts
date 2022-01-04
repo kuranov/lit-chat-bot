@@ -1,5 +1,5 @@
 import {avatarGenerator} from "../helpers/avatar-generator.js";
-
+import {compareTwoStrings} from 'string-similarity'
 export type PublishMessageMethod = (message: MessageModel) => void;
 
 enum BotState {
@@ -38,11 +38,9 @@ export class Bot {
       `Wow, new faces! Hi, ${member.name}!`,
       `Welcome abroad, ${member.name}!`,
     ]));
-    return;
   }
 
-  onMemberOnline(member: MemberModel): void {
-  }
+  onMemberOnline(member: MemberModel): void {}
 
   onMessage(message: MessageModel): void {
     if (message.username === this.profile.name) {
@@ -57,7 +55,7 @@ export class Bot {
       return this.handlePendingForAnswerConfirmation(message);
     }
 
-    if (this.isQuestion(message)) {
+    if (this.isQuestion(message) && !this.searchAnswerAndPublish(message)) {
       this.pendingQuestion = message;
       this.state = BotState.PENDING_FOR_ANSWER;
       return;
@@ -66,6 +64,28 @@ export class Bot {
     if (this.isGreeting(message)) {
       return this.sayHi(message);
     }
+  }
+
+  searchAnswerAndPublish(message: MessageModel): boolean {
+    const qa = this.searchAnswers(message);
+    if (qa) {
+      [
+        `I've found answer for similar question!`,
+        `Q: ${qa.question.text}`,
+        `A: ${qa.answer.text}`,
+      ]
+      .forEach(txt => this.publish(this.createMessage(txt)));
+
+      return true;
+    }
+
+    return false;
+  }
+
+  searchAnswers(message: MessageModel): QuestionAndAnswerModel | undefined {
+    return this.questionsAndAnswers.find(qa =>
+      compareTwoStrings(qa.question.text, message.text) > 0.7
+    );
   }
 
   handlePendingForAnswer(message: MessageModel): void {
@@ -153,6 +173,7 @@ export class Bot {
   private createRandom(items: string[]): MessageModel {
     return this.createMessage(this.rand(items));
   }
+
   private rand(items: string[]): string {
     return items[Math.floor(Math.random() * items.length)]
   }
