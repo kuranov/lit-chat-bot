@@ -140,6 +140,7 @@ export class Bot {
   sayHi(message: MessageModel): void {
     const response = this.createRandom([
       `${message.username}, glad to see you here :)`,
+      `Hey, ${message.username}! Whats up?`,
       `How it's going, ${message.username}?`,
     ]);
     this.publish(response);
