@@ -30,5 +30,7 @@ export default /** @type {import('@web/dev-server').DevServerConfig} */ ({
     }),
   ],
 
+  injectWebSocket: true,
+
   // See documentation for all available options
 });

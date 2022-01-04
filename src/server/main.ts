@@ -1,20 +1,29 @@
 import express, {Response} from "express";
+import expressWs from "express-ws";
 import {avatarGenerator} from "../helpers/avatar-generator.js";
 import {Bot} from "./bot.js";
-const serverConfig = {
-  port: 3000,
-};
+import WebSocket from "ws";
+import {serverConfig} from "./server-config.js";
+
 const app = express();
+const webSocket = expressWs(app).app;
+const socketConnections: WebSocket[] = [];
+
 const successResponse = (res: Response) => res.send({result: 'success'})
 const members: MemberModel[] = [];
 const messages: MessageModel[] = [];
-const bot: Bot = new Bot();
+const qa: QuestionAndAnswerModel[] = [];
+const bot: Bot = new Bot(publishMessage);
 
-function onPublishMessage(message: MessageModel) {
+// function searchForAnswer(message: MessageModel): QuestionAndAnswerModel {
+//
+// }
+
+function publishMessage(message: MessageModel) {
   messages.push(message);
+  socketConnections.forEach(ws => ws.send(JSON.stringify(message)));
   bot.onMessage(message);
 }
-bot.registerPublisher(onPublishMessage);
 
 function onMemberOnline(username: string): MemberModel {
   const existing = members.find(m => m.name === username);
@@ -40,6 +49,12 @@ function registerMember(username: string): MemberModel {
 members.push(bot.profile);
 
 app.use(express.json());
+webSocket.ws('/messages-stream', function (ws, req) {
+  socketConnections.push(ws);
+  ws.on('close', () => {
+
+  });
+});
 app.get('/members', (req, res) => {
   res.send(members);
 });
@@ -48,7 +63,7 @@ app.get('/messages', (req, res) => {
 });
 app.post('/messages', (req, res) => {
   const message: MessageModel = req.body;
-  onPublishMessage(message);
+  publishMessage(message);
   successResponse(res);
 });
 app.post('/signin', function (req, res) {
@@ -57,5 +72,5 @@ app.post('/signin', function (req, res) {
   successResponse(res);
 });
 app.listen(serverConfig.port, () => {
-  console.log(`Example app listening at http://localhost:${serverConfig.port}`)
+  console.log(`Example app listening at http://${serverConfig.host}:${serverConfig.port}`)
 });

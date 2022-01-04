@@ -8,12 +8,14 @@
   "scripts": {
     "analyze": "cem analyze --litelement",
     "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
-    "start:server": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"node ./dist/server/main.js\""
+    "start:server": "tsc; node ./dist/server/main.js"
   },
   "dependencies": {
     "@lit-labs/motion": "^1.0.1",
+    "@types/express-ws": "^3.0.1",
     "@types/koa-proxy": "^1.0.4",
     "express": "^4.17.2",
+    "express-ws": "^5.0.2",
     "koa-proxy": "^1.0.0-alpha.3",
     "lit": "^2.0.2"
   },

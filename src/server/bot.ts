@@ -2,7 +2,15 @@ import {avatarGenerator} from "../helpers/avatar-generator.js";
 
 export type PublishMessageMethod = (message: MessageModel) => void;
 
+enum BotState {
+  NEUTRAL,
+  PENDING_FOR_ANSWER,
+  PENDING_FOR_ANSWER_CONFIRMATION,
+}
+
 export class Bot {
+
+  state: BotState = BotState.NEUTRAL;
 
   profile: MemberModel = {
     name: 'James Bot',
@@ -10,15 +18,7 @@ export class Bot {
     avatar: avatarGenerator([], true)
   }
 
-  private publishMessage?: PublishMessageMethod;
-
-  constructor(publishMessage?: PublishMessageMethod) {
-    this.publishMessage = publishMessage;
-  }
-
-  registerPublisher(publishMessage: PublishMessageMethod): void {
-    this.publishMessage = publishMessage;
-  }
+  constructor(private messagePublisher: PublishMessageMethod) {}
 
   createMessage(text: string): MessageModel {
     return {
@@ -37,20 +37,40 @@ export class Bot {
   }
 
   onMessage(message: MessageModel): void {
-    if (message.text.match(/(hello|hi)/)) {
-      this.greeting(message);
+    if (message.username === this.profile.name) {
+      return;
+    }
+
+    if (this.isGreeting(message)) {
+      return this.sayHi(message);
+    }
+
+    if (this.isQuestion(message)) {
+      this.sayHi(message);
       return;
     }
   }
 
-  greeting(message: MessageModel): void {
+  isGreeting(message: MessageModel): boolean {
+    const needle = ['hello', 'hi', 'yo'];
+    const pattern = new RegExp(`([^a-z]|^)(${needle.join('|')})([^a-z]|$)`, 'gmi');
+    return pattern.test(message.text);
+  }
+
+  isQuestion(message: MessageModel): boolean {
+    return /\?$/gm.test(message.text.trim());
+  }
+
+  sayHi(message: MessageModel): void {
     const response = this.createRandom([
-      'Hello there!',
-      'Whats up, man?'
+      `Hello there!`,
+      `Hey, ${message.username}! Whats up?`
     ]);
-    if (this.publishMessage) {
-      this.publishMessage(response);
-    }
+    this.publish(response);
+  }
+
+  publish(message: MessageModel) {
+    this.messagePublisher(message);
   }
 
   private createRandom(items: string[]): MessageModel {

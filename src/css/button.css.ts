@@ -3,6 +3,7 @@ import {css} from "lit";
 export const buttonCss = css`
 button {
   display: flex;
+  
   cursor: pointer;
   background: transparent;
   padding: 0 12px;

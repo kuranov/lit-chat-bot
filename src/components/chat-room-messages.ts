@@ -1,6 +1,9 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from "lit/decorators.js";
 import "./chat-room-messages-item.js";
+import {repeat} from "lit/directives/repeat.js";
+
+const messageId = (msg: MessageModel) => `${msg.username}_${msg.time.getTime()}`;
 
 @customElement('chat-room-messages')
 export class ChatRoomMessages extends LitElement {
@@ -17,12 +20,12 @@ export class ChatRoomMessages extends LitElement {
 
   override render() {
     return html`
-      ${this.messages?.map((message, index) =>
-        html`<chat-room-messages-item 
+      ${repeat(this.messages, messageId, (message, index) => {
+        return html`<chat-room-messages-item
             .message=${message}
             .displayAuthor=${!this.sameAuthorAsBefore(index)}
-        ></chat-room-messages-item>`,
-      )}`;
+        ></chat-room-messages-item>`;
+      })}`;
   }
 
   sameAuthorAsBefore(index: number): boolean {

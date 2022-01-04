@@ -36,18 +36,21 @@ export class ChatRoomMessagesItem extends LitElement {
   displayAuthor: boolean = true;
 
   override render() {
-    const time  = this.message?.time ? timeFormat.format(this.message?.time) : '';
     return html`<main>
-      <time>${time}</time>
+      <time>${formatTime(this.message?.time)}</time>
       ${this.displayAuthor ? html`<header>${this.message?.username}</header>`: ''}
       <p>${this.message?.text}</p>
     </main>`;
   }
 }
 
-const timeFormat = new Intl.DateTimeFormat('en-US', {
+
+const timeFormatter = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric', minute: 'numeric', second: 'numeric',
 });
+const formatTime = (time: Date | undefined): string => {
+  return time ? timeFormatter.format(time) : '';
+}
 
 declare global {
   interface HTMLElementTagNameMap {
