@@ -7,6 +7,7 @@ import {directive} from 'lit/directive.js';
 import "./chat-room-messages.js";
 import "./chat-room-members.js";
 import "./chat-room-message-form.js";
+import {MemberModel} from "../models/member.model";
 
 @customElement('chat-room')
 export class ChatRoom extends LitElement {
@@ -16,7 +17,7 @@ export class ChatRoom extends LitElement {
       align-items: stretch;
       overflow: hidden;
       height: 80%;
-      border-top: 8px solid #ccc;
+      border-top: 8px solid #02b8b0;
       border-radius: 8px;
       padding: 0;
       background: url('/assets/ep_naturalwhite.png');
@@ -36,13 +37,12 @@ export class ChatRoom extends LitElement {
   @property()
   currentMember!: MemberModel;
 
-  private dataSource = new ChatRoomController(this, this.currentMember);
+  private dataSource = new ChatRoomController(this);
 
   override render() {
     const scrollToBottomAfterUpdate = directive(ScrollToBottomAfterUpdateDirective);
 
     return html`<nav>
-        
         <chat-room-members .members=${this.dataSource.members}></chat-room-members>
       </nav>
       <main>

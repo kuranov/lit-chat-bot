@@ -1,5 +1,7 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from "lit/decorators.js";
+import {MemberModel} from "../models/member.model";
+import {animate, fadeIn, fadeOut, flyBelow} from "@lit-labs/motion";
 
 @customElement('chat-room-members')
 export class ChatRoomMembers extends LitElement {
@@ -21,8 +23,18 @@ export class ChatRoomMembers extends LitElement {
     i {
       display: inline-block;
       font-style: normal;
+      width: 24px;
     }
   `;
+
+  private animations = {
+    keyframeOptions: {
+      duration: 500
+    },
+    in: fadeIn,
+    out: fadeOut
+  };
+
 
   @property()
   members: MemberModel[] = [];
@@ -31,7 +43,7 @@ export class ChatRoomMembers extends LitElement {
     return html`<header>Active users</header>
       <ul>
       ${this.members?.map(member => 
-        html`<li>
+        html`<li ${animate(this.animations)}>
           <i>${member.avatar}</i>
           ${member.name}
         </li>`

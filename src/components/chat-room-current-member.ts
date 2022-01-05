@@ -7,6 +7,7 @@ import {directive} from 'lit/directive.js';
 import "./chat-room-messages.js";
 import "./chat-room-members.js";
 import "./chat-room-message-form.js";
+import {MemberModel} from "../models/member.model";
 
 @customElement('chat-room-current-member')
 export class ChatRoomCurrentMember extends LitElement {

@@ -1,6 +1,9 @@
 import {avatarGenerator} from "../helpers/avatar-generator.js";
-import {compareTwoStrings} from 'string-similarity'
-export type PublishMessageMethod = (message: MessageModel) => void;
+import {compareTwoStrings} from 'string-similarity';
+import {PublishMessage} from "../models/publish-message.type";
+import {MemberModel} from "../models/member.model";
+import {MessageModel} from "../models/message.model";
+import {QuestionAndAnswerModel} from "../models/question-and-answer.model";
 
 enum BotState {
   NEUTRAL,
@@ -9,42 +12,44 @@ enum BotState {
 }
 
 export class Bot {
-
-  state: BotState = BotState.NEUTRAL;
-
-  pendingQuestion?: MessageModel;
-
   profile: MemberModel = {
     name: 'James Bot',
     isBot: true,
     avatar: avatarGenerator([], true)
   }
-
+  state: BotState = BotState.NEUTRAL;
+  pendingQuestion?: MessageModel;
+  pendingAnswer?: MessageModel;
   questionsAndAnswers: QuestionAndAnswerModel[] = [];
+  answerSimilarityLevel = 0.7;
 
-  constructor(private messagePublisher: PublishMessageMethod) {}
-
-  createMessage(text: string): MessageModel {
-    return {
-      text: text,
-      username: this.profile.name,
-      time: new Date(),
-    }
-  }
+  constructor(private messagePublisher: PublishMessage) {}
 
   onMemberRegister(member: MemberModel): void {
-    this.publish(this.createRandom([
-      `${member.name}, haven't seen you here before! Glad to see you!`,
+    this.pickAndPublish([
+      `${member.name}, haven't seen you here before! Glad to meet you!`,
       `Wow, new faces! Hi, ${member.name}!`,
       `Welcome abroad, ${member.name}!`,
-    ]));
+    ]);
   }
 
   onMemberOnline(member: MemberModel): void {}
 
+  onMemberOffline(member: MemberModel): void {
+    this.pickAndPublish([
+      `${member.name}, you didn't even say goodbye!`,
+      `I hope ${member.name} left in a good mood!`,
+      `Bye, I will miss!`,
+    ]);
+  }
+
   onMessage(message: MessageModel): void {
-    if (message.username === this.profile.name) {
+    if (this.isMyOwnMessage(message)) {
       return;
+    }
+
+    if (this.isHelpCommand(message)) {
+      return this.handleHelp(message);
     }
 
     if (this.state === BotState.PENDING_FOR_ANSWER) {
@@ -68,34 +73,33 @@ export class Bot {
 
   searchAnswerAndPublish(message: MessageModel): boolean {
     const qa = this.searchAnswers(message);
-    if (qa) {
-      [
-        `I've found answer for similar question!`,
-        `Q: ${qa.question.text}`,
-        `A: ${qa.answer.text}`,
-      ]
-      .forEach(txt => this.publish(this.createMessage(txt)));
-
-      return true;
+    if (!qa) {
+      return false;
     }
 
-    return false;
+    this.publishAll([
+      `I've found answer for similar question!`,
+      `Q: ${qa.question.text}`,
+      `A: ${qa.answer.text}`,
+    ]);
+
+    return true;
   }
 
   searchAnswers(message: MessageModel): QuestionAndAnswerModel | undefined {
     return this.questionsAndAnswers.find(qa =>
-      compareTwoStrings(qa.question.text, message.text) > 0.7
+      compareTwoStrings(qa.question.text, message.text) > this.answerSimilarityLevel
     );
   }
 
   handlePendingForAnswer(message: MessageModel): void {
-    [
+    this.publishAll([
       'Seems like it is answer for previous question, right?',
-      `Question: "${this.pendingQuestion?.text}"`,
+      `Q: ${this.pendingQuestion?.text}`,
+      `A: ${message.text}`,
       `Save answer? Type 'Yes' or 'No'`,
-    ]
-    .forEach(txt => this.publish(this.createMessage(txt)));
-
+    ]);
+    this.pendingAnswer = message;
     this.state = BotState.PENDING_FOR_ANSWER_CONFIRMATION;
   }
 
@@ -107,36 +111,57 @@ export class Bot {
     const [yes, no] = [this.isYes(message), this.isNo(message)];
 
     if (!yes && !no) {
-      this.publish(this.createRandom([
-        'Please, just Yes or No',
-        'Not clear… I\'m just a robot, help me to understand you, say Yes or No',
-        'Hm-m, I wait for Yes or No, simple deal',
-      ]));
+      this.pickAndPublish([
+        `Please, just 'Yes' or 'No'`,
+        `Not clear… I'm just a robot, help me to understand you, type 'Yes' or 'No'`,
+        `Hm-m, I'm waiting for 'Yes' or 'No', simple deal!`,
+      ]);
       return;
     }
 
     if (yes) {
       this.questionsAndAnswers.push({
         question: this.pendingQuestion!,
-        answer: message,
+        answer: this.pendingAnswer!,
       });
-      this.publish(this.createRandom([
+      this.pickAndPublish([
         'Okay, got it!',
         'Yep, saved!',
         'I will keep it!',
-      ]));
+      ]);
     }
 
     if (no) {
-      this.publish(this.createRandom([
-        'Nevermind…',
-        ':(',
+      this.pickAndPublish([
+        'Nevermind',
+        'Okay, next time',
         'Fine.'
-      ]));
+      ]);
     }
 
+    this.pendingAnswer = undefined;
     this.pendingQuestion = undefined;
     this.state = BotState.NEUTRAL;
+  }
+
+  handleHelp(message: MessageModel): void {
+    this.publishAll([
+      `My name is James Bot!`,
+      `I'm a robot`,
+      `I have a beautiful metallic head. You could see my face in the left corner of that window`,
+      `If you text (hi|hello|yo), I'll greet you`,
+      `If you've left a chat I say goodbye`,
+      `If you ask a question, I'm listening for an answer and if you don't mind remember it forever!`,
+      `Next time if you ask a similar question I immediately answer with the previous answer!`
+    ]);
+  }
+
+  isMyOwnMessage(message: MessageModel): boolean {
+    return message.username === this.profile.name;
+  }
+
+  isHelpCommand(message: MessageModel): boolean {
+    return /^\/help/i.test(message.text.trim());
   }
 
   isYes(message: MessageModel): boolean {
@@ -158,23 +183,38 @@ export class Bot {
   }
 
   sayHi(message: MessageModel): void {
-    const response = this.createRandom([
+    this.pickAndPublish([
       `${message.username}, glad to see you here :)`,
       `Hey, ${message.username}! Whats up?`,
       `How it's going, ${message.username}?`,
     ]);
-    this.publish(response);
   }
 
-  publish(message: MessageModel) {
+  private publish(message: MessageModel) {
     this.messagePublisher(message);
   }
 
-  private createRandom(items: string[]): MessageModel {
-    return this.createMessage(this.rand(items));
+  private publishAll(items: string[]): void {
+    items.forEach(txt => this.publish(this.messageFromText(txt)));
   }
 
-  private rand(items: string[]): string {
+  private pickAndPublish(items: string[]): void {
+    this.publish(this.pickRandomAndCreateMessage(items));
+  }
+
+  private pickRandomAndCreateMessage(items: string[]): MessageModel {
+    return this.messageFromText(this.pickRandomFrom(items));
+  }
+
+  private pickRandomFrom(items: string[]): string {
     return items[Math.floor(Math.random() * items.length)]
+  }
+
+  private messageFromText(text: string): MessageModel {
+    return {
+      text: text,
+      username: this.profile.name,
+      time: new Date(),
+    }
   }
 }

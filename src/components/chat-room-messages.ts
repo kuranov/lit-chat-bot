@@ -2,8 +2,9 @@ import {css, html, LitElement} from 'lit';
 import {customElement, property} from "lit/decorators.js";
 import "./chat-room-messages-item.js";
 import {repeat} from "lit/directives/repeat.js";
-
-const messageId = (msg: MessageModel) => `${msg.username}_${msg.time.getTime()}`;
+import {MessageModel} from "../models/message.model";
+import {messageId} from "../helpers/message-id";
+import {animate, AnimateController, fadeIn, flyAbove, flyBelow} from "@lit-labs/motion";
 
 @customElement('chat-room-messages')
 export class ChatRoomMessages extends LitElement {
@@ -12,20 +13,38 @@ export class ChatRoomMessages extends LitElement {
       width: 600px;
       overflow: scroll;
       flex-grow: 1;
-      border-radius: 8px;
-    }`;
+      padding: 10px 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: baseline;
+      justify-content: end;
+      min-height: 100%;
+    }
+  `;
+
+  private messageAnimation = {
+    keyframeOptions: {
+      duration: 350
+    },
+    in: fadeIn,
+    out: flyBelow
+  };
 
   @property()
   messages: MessageModel[] = [];
 
   override render() {
-    return html`
+    return html`<main>
       ${repeat(this.messages, messageId, (message, index) => {
         return html`<chat-room-messages-item
-            .message=${message}
+              ${animate(this.messageAnimation)}
+              .message=${message}
             .displayAuthor=${!this.sameAuthorAsBefore(index)}
         ></chat-room-messages-item>`;
-      })}`;
+      })}
+    </main>`;
   }
 
   sameAuthorAsBefore(index: number): boolean {

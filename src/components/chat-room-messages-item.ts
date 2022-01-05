@@ -1,5 +1,7 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from "lit/decorators.js";
+import {MessageModel} from "../models/message.model";
+import {AnimateController, flyAbove, flyBelow} from "@lit-labs/motion";
 
 @customElement('chat-room-messages-item')
 export class ChatRoomMessagesItem extends LitElement {
@@ -8,8 +10,8 @@ export class ChatRoomMessagesItem extends LitElement {
       background: #fff;
       box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
       border-radius: 12px;
-      margin: 7px 16px;
-      padding: 8px 16px;
+      margin: 4px 16px;
+      padding: 8px 66px 8px 16px;
       position: relative;
     }
     header {
@@ -19,13 +21,14 @@ export class ChatRoomMessagesItem extends LitElement {
     time {
       position: absolute;
       right: 16px;
-      top: 16px;
+      top: 12px;
       font-size: 8px;
       color: #999;
     }
     p {
       margin: 0px;
-      font-size: 14px;
+      font-size: 13px;
+      color: #555;
     }
   `;
 
@@ -43,7 +46,6 @@ export class ChatRoomMessagesItem extends LitElement {
     </main>`;
   }
 }
-
 
 const timeFormatter = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric', minute: 'numeric', second: 'numeric',

@@ -6,6 +6,7 @@ import "./components/chat-room.js";
 import {SignController} from "./controllers/sign.controller";
 import {animate, AnimateController, fadeOut, flyAbove, flyBelow} from "@lit-labs/motion";
 import {TemplateResult} from "lit-html";
+import {MemberModel} from "./models/member.model";
 
 @customElement('app-index')
 export class AppElement extends LitElement {
