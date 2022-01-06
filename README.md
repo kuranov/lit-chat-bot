@@ -55,8 +55,8 @@ Things that I dreamed, but not made.
   * Imitation of bot's typing: before bot sends something firstly imitate typing state
 * [Markdown](https://www.markdownguide.org/) support
 * Use Task from [@lit-labs/task](https://www.npmjs.com/package/@lit-labs/task) for authorization process
-* When focus in message input press on UP
-* Different types of information in chat, not only for example for log event such as `${username} logged in`
+* When focus in message text input pressing on KEYBOARD UP pastes previous message as input value
+* Different types of information in chat: not only messages, for example logs of events such as `${username} logged in`
 * Theming, css variables
 
 ## Scripts
